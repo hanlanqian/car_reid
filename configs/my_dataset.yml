@@ -1,0 +1,20 @@
+data:
+  pkl_path: '/home/hanlanqian/PycharmProjects/PVEN_mine/examples/outputs/veri776.pkl'
+  train_size: (256, 256)
+  valid_size: (256, 256)
+  train_num_workers: 6
+  test_num_workers: 6
+  batch_size: 10
+  with_mask: True
+
+loss:
+  losses: ["id", "triplet", "center"]
+
+test:
+  remove_junk: True
+  lambda_: 0.0
+
+device: 'cuda'
+output_dir: '../outputs/my_outputs/'
+infer_flag: True
+
