@@ -15,11 +15,10 @@ from .bases import ReIDMetaDataset, relabel, get_imagedata_info
 
 
 class CommonReIDDataset(ReIDMetaDataset):
-    def __init__(self, pkl_path, verbose=True, test_ext='', **kwargs):
+    def __init__(self, metas, verbose=True, test_ext='', **kwargs):
         """
         test_ext: For VehicleID and VERIWild, there are multi test sets. Pass the test ext to select which one to use.
         """
-        metas = pkl.load(open(pkl_path, 'rb'))
         self.train = metas["train"] if not kwargs['infer'] else dict({})
         self.query = metas["query" + str(test_ext)]
         self.gallery = metas["gallery" + str(test_ext)]

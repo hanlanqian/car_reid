@@ -222,8 +222,8 @@ def eval_(model,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", default="../checkpoints/parsing_model.pth")
-    parser.add_argument("--reid-pkl-path", type=str, default='preprocess_data/veri776.pkl')
+    parser.add_argument("--model-path", default="./checkpoints/parsing_model.pth")
+    parser.add_argument("--reid-pkl-path", type=str, default='./veri776.pkl')
     parser.add_argument("--output-path", type=str, default='./outputs/')
     parser.add_argument("--config", type=str, default="./configs/my_dataset.yml")
     parser.add_argument("--cmd-config", default=(), nargs='?')
