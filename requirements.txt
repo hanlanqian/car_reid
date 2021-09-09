@@ -1,0 +1,9 @@
+numpy
+albumentations
+ipdb
+scipy
+logzero
+yacs
+pandas
+segmentation_models_pytorch
+opencv-python

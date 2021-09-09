@@ -128,11 +128,7 @@ def build_model(cfg, num_classes):
 
 
 if __name__ == '__main__':
-    from tensorboardX import SummaryWriter
-
     dummy_input = torch.rand(4, 3, 224, 224)
     model = Baseline(576, 1, '/home/mengdechao/.cache/torch/checkpoints/resnet50-19c8e357.pth', 'bnneck', 'after',
                      'resnet50', 'imagenet')
     model.train()
-    with SummaryWriter(comment="baseline") as w:
-        w.add_graph(model, [dummy_input, ])

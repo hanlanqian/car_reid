@@ -56,4 +56,5 @@ if __name__ == '__main__':
     if args.plot:
         img_show(image_query_path, image_path)
     else:
-        pass
+        print(image_query_path)
+        print(image_path)

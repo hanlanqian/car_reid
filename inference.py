@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append('./parsing_reid/')
 from datasets.datasets import VehicleReIDParsingDataset, get_preprocessing, get_validation_augmentation
 from pathlib import Path
 from utils import mkdir_p
