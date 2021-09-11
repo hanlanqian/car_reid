@@ -49,8 +49,8 @@ def predict(model, test_dataset, test_dataset_vis, output_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", default="../../checkpoints/parsing_model.pth")
-    parser.add_argument("--reid-pkl-path", type=str, default='../preprocess_data/veri776.pkl')
+    parser.add_argument("--model-path", default="./checkpoints/parsing_model.pth")
+    parser.add_argument("--reid-pkl-path", type=str, default='./outputs/my_veri776.pkl')
     parser.add_argument("--output-path", type=str, default='./outputs/')
     args = parser.parse_args()
     model = torch.load(args.model_path)

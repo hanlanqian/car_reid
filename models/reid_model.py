@@ -125,10 +125,3 @@ def build_model(cfg, num_classes):
     model = ParsingReidModel(num_classes, cfg.model.last_stride, cfg.model.pretrain_model, cfg.model.neck,
                              cfg.test.neck_feat, cfg.model.name, cfg.model.pretrain_choice)
     return model
-
-
-if __name__ == '__main__':
-    dummy_input = torch.rand(4, 3, 224, 224)
-    model = Baseline(576, 1, '/home/mengdechao/.cache/torch/checkpoints/resnet50-19c8e357.pth', 'bnneck', 'after',
-                     'resnet50', 'imagenet')
-    model.train()

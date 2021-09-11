@@ -105,13 +105,12 @@ def save_checkpoint(epoch, output_dir, **kwargs):
         torch.save(obj.state_dict(), f'{output_dir}/{key}_{epoch}.pth')
 
 
-def merge_configs(cfg, config_files, cmd_config):
+def merge_configs(cfg, config_files):
     """
-    融合不同的配置。依次加载默认配置，配置文件和命令行参数。配置文件用,隔开
+    融合不同的配置。依次加载默认配置和配置文件
 
     :param CfgNode cfg:
     :param str config_files:
-    :param list cmd_config:
     :return:
     """
     if config_files != "":
@@ -119,7 +118,6 @@ def merge_configs(cfg, config_files, cmd_config):
         for config_file in config_files:
             cfg.merge_from_file(config_file)
 
-    cfg.merge_from_list(cmd_config)
     return cfg
 
 

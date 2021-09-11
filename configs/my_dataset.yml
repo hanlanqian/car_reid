@@ -7,13 +7,14 @@ data:
   with_mask: True
 
 loss:
-  losses: ["id", "triplet", "center"]
+  losses: [ "id", "triplet", "center" ]
 
 test:
   remove_junk: True
   lambda_: 0.0
+  infer_flag: True
 
 device: 'cuda'
 output_dir: './outputs/my_outputs/'
-infer_flag: True
+
 

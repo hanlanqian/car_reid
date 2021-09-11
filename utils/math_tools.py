@@ -98,15 +98,19 @@ class Clck_R1_mAP:
         self.pids = []
         self.camids = []
         self.paths = []
+        self.color_feature = []
+        self.vehicle_type_feature = []
 
     def update(self, output):
-        global_feat, local_feat, vis_score, pid, camid, paths = output
+        global_feat, local_feat, vis_score, pid, camid, paths, color_feature, vehicle_type_feature = output
         self.global_feats += global_feat
         self.local_feats += local_feat
         self.vis_scores += vis_score
         self.pids.extend(np.asarray(pid))
         self.camids.extend(np.asarray(camid))
         self.paths += paths
+        self.color_feature += color_feature
+        self.vehicle_type_feature += vehicle_type_feature
 
     def save(self, path):
         output_dict = {
@@ -115,7 +119,9 @@ class Clck_R1_mAP:
             "vis_scores": self.vis_scores,
             "pids": self.pids,
             "camids": self.camids,
-            "paths": self.paths
+            "paths": self.paths,
+            "color_feature": self.color_feature,
+            "vehicle_type_feature": self.vehicle_type_feature
         }
         torch.save(output_dict, path)
 
@@ -228,6 +234,8 @@ class Clck_R1_mAP:
                 "num_query": self.num_query,
                 "distmat": distmat,
                 "local_distmat": local_distmat,
+                "color_feature": self.color_feature,
+                "vehicle_type_feature": self.vehicle_type_feature
             }
             torch.save(outputs, os.path.join(self.output_path,
                                              'test_output.pkl'), pickle_protocol=4)

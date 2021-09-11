@@ -230,6 +230,7 @@ def get_expectation_of_AP(N=10, T=3):
     N: 样本总数
     T: 正例数量
     """
+    APs = []
     for i in range(1000):
         idxs = np.random.choice(np.arange(N), T)
         cmc = np.zeros(N)

@@ -27,7 +27,8 @@ def img_show(img_query_list: list, img_result_list: list, save: bool = False):
                 plt.imshow(plt.imread(img_result_list[j - 1][i]))
     plt.show()
     if save:
-        plt.imsave()
+        ax.savefig('./outputs/result.jpg')
+
 
 
 def N_rank(rank_num, pkl_path):
@@ -50,11 +51,12 @@ if __name__ == '__main__':
     parse.add_argument('--pkl-path', type=str, default='./outputs/my_outputs/test_output.pkl')
     parse.add_argument('--rank-num', type=int, default=5)
     parse.add_argument('--plot', type=bool, default=True)
+    parse.add_argument('--save', type=bool, default=False)
     args = parse.parse_args()
 
     image_path, image_query_path = N_rank(args.rank_num, args.pkl_path)
     if args.plot:
-        img_show(image_query_path, image_path)
+        img_show(image_query_path, image_path, args.save)
     else:
         print(image_query_path)
         print(image_path)
