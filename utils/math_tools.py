@@ -13,34 +13,6 @@ from functools import reduce
 from metrics.rerank import re_ranking
 
 
-# def calc_dist_split(qf, gf, split=0):
-#     qf = qf
-#     m = qf.shape[0]
-#     n = gf.shape[0]
-#     distmat = gf.new(m, n)
-
-#     if split == 0:
-#         distmat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, n) + \
-#                 torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
-#         distmat.addmm_(x, y.t(), beta=1, alpha=-2)
-
-#     # 用于测试时控制显存
-#     else:
-#         start = 0
-#         while start < n:
-#             end = start + split if (start + split) < n else n
-#             num = end - start
-
-#             sub_distmat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, num) + \
-#                     torch.pow(gf[start:end], 2).sum(dim=1, keepdim=True).expand(num, m).t()
-#             # sub_distmat.addmm_(1, -2, qf, gf[start:end].t())
-#             sub_distmat.addmm_(qf, gf[start:end].t(), beta=1, alpha=-2)
-#             distmat[:, start:end] = sub_distmat.cpu()
-#             start += num
-
-#     return distmat
-
-
 def clck_dist(feat1, feat2, vis_score1, vis_score2, split=0):
     """
     计算vpm论文中的clck距离
@@ -65,6 +37,14 @@ def clck_dist(feat1, feat2, vis_score1, vis_score2, split=0):
                                    parse_feat2, split=split).sqrt() * ckcl_
 
     return dist_mat / ckcl
+
+
+def calculate_feature_distance(feat1, feat2):
+    m, n, color_num = feat1.shape[0], feat2.shape[0], feat1.shape[1]
+    color_distmat = torch.pow(feat1, 2).sum(dim=1, keepdim=True).expand(m, n) + torch.pow(feat2, 2).sum(dim=1, keepdim=True).expand(n, m).t()
+    color_distmat.addmm_(feat1, feat2.t(), beta=1, alpha=-2)
+    return color_distmat.detach().cpu().numpy()
+
 
 
 class Clck_R1_mAP:
@@ -133,6 +113,8 @@ class Clck_R1_mAP:
         self.pids = dict["pids"]
         self.camids = dict["camids"]
         self.paths = dict["paths"]
+        self.color_feature = dict["color_feature"]
+        self.vehicle_type_feature = dict["vehicle_type_feature"]
 
     def resplit_for_vehicleid(self):
         """每个ID随机选择一辆车组成gallery，剩下的为query。
@@ -168,17 +150,22 @@ class Clck_R1_mAP:
         global_feats = torch.stack(self.global_feats, dim=0)
         local_feats = torch.stack(self.local_feats, dim=0)
         vis_scores = torch.stack(self.vis_scores)
+        color_feature = torch.stack(self.color_feature, dim=0)
+        vehicle_type_feature = torch.stack(self.vehicle_type_feature, dim=0)
         if self.feat_norm:
             print("The test feature is normalized")
             global_feats = F.normalize(global_feats, dim=1, p=2)
             local_feats = F.normalize(local_feats, dim=1, p=2)
+            color_feature = F.normalize(color_feature, dim=1, p=2)
+            vehicle_type_feature = F.normalize(vehicle_type_feature, dim=1, p=2)
+
         # 全局距离
         print('Calculate distance matrixs...')
         # query
         qf = global_feats[:self.num_query]
         q_pids = np.asarray(self.pids[:self.num_query])
         q_camids = np.asarray(self.camids[:self.num_query])
-        # gallery
+        # gallerye
         gf = global_feats[self.num_query:]
         g_pids = np.asarray(self.pids[self.num_query:])
         g_camids = np.asarray(self.camids[self.num_query:])
@@ -222,20 +209,28 @@ class Clck_R1_mAP:
         local_feats = local_feats
         local_distmat = local_distmat.detach().cpu().numpy()
 
+        # 颜色距离
+        print('Calculate color distances.....')
+        color_distmat = calculate_feature_distance(color_feature[:self.num_query], color_feature[self.num_query:])
+
+        # 车型距离
+        vehicle_type_distmat = calculate_feature_distance(vehicle_type_feature[:self.num_query], vehicle_type_feature[self.num_query:])
         if self.output_path:
             print('Saving results...')
             outputs = {
                 "global_feats": global_feats,
                 "vis_scores": vis_scores,
                 "local_feats": local_feats,
+                "color_feature": self.color_feature,
+                "vehicle_type_feature": self.vehicle_type_feature,
                 "pids": self.pids,
                 "camids": self.camids,
                 "paths": self.paths,
                 "num_query": self.num_query,
                 "distmat": distmat,
                 "local_distmat": local_distmat,
-                "color_feature": self.color_feature,
-                "vehicle_type_feature": self.vehicle_type_feature
+                "color_distmat": color_distmat,
+                "vehicle_type_distmat": vehicle_type_distmat,
             }
             torch.save(outputs, os.path.join(self.output_path,
                                              'test_output.pkl'), pickle_protocol=4)

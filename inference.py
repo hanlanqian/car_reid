@@ -108,7 +108,7 @@ def eval_(models,
     """实际测试函数
 
     Arguments:
-        models {nn.Module}} -- 所有预测模型
+        models {nn.Module}} -- 所有预测模型 [PVEN_model, color_predict_model,  vehicle_type_predict_model]
         device {string} -- 设备
         valid_loader {DataLoader} -- 测试集
         query_length {int} -- 测试集长度

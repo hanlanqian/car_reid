@@ -5,10 +5,16 @@ import argparse
 import matplotlib.pyplot as plt
 
 
+def calculate_final_dist(output_path, alpha=1, beta=0.5, lamda1=0, lamda2=0.5) -> dict:
+    file = torch.load(output_path)
+    file.update({'final_distmat': alpha * file['distmat'] + beta * file['local_distmat'] + lamda1 * file[
+        'color_distmat'] + lamda2 * file['vehicle_type_distmat']})
+    return file
+
 def img_show(img_query_list: list, img_result_list: list, save: bool = False):
     query_len = len(img_query_list)
     result_len = len(img_result_list)
-    ax = plt.figure(dpi=500)
+    ax = plt.figure(dpi=200)
     plt.axis('off')
     plt.tight_layout(2.4)
     count = 1
@@ -30,19 +36,15 @@ def img_show(img_query_list: list, img_result_list: list, save: bool = False):
         ax.savefig('./outputs/result.jpg')
 
 
-
 def N_rank(rank_num, pkl_path):
     image_path = []
     image_query_path = []
-    with open(pkl_path, 'rb') as f:
-        file = torch.load(f)
-
-    # _index = np.sort(file['distmat'], axis=0)[:rank_num]
-    _index = file['distmat'].argpartition(rank_num, axis=1)
+    file = calculate_final_dist(pkl_path)
+    _index = file['final_distmat'].argpartition(rank_num, axis=1)
 
     for j in range(rank_num):
         image_path.append([file['paths'][i + len(_index)] for i in _index[:, j]])
-        image_query_path = file['paths'][:len(_index)]
+    image_query_path = file['paths'][:len(_index)]
     return image_path, image_query_path
 
 
